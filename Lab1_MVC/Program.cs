@@ -9,6 +9,7 @@ using Scalar.AspNetCore;
 using Microsoft.Extensions.AI;
 using OpenAI;
 using System.ClientModel;
+using Lab1_MVC.Mcp;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<LibraryContext>(options =>
@@ -34,11 +35,24 @@ builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddValidation();
 builder.Services.AddOpenApi();
 
-var token = builder.Configuration["GitHubModels:Token"] ?? throw new InvalidOperationException("Lipsește GitHubModels:Token (User Secrets).");
-IChatClient chat = new OpenAIClient(new ApiKeyCredential(token), new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") })
-    .GetChatClient("openai/gpt-4o-mini").AsIChatClient();
-builder.Services.AddChatClient(chat);
+var token = builder.Configuration["GitHubModels:Token"];
 
+if (!string.IsNullOrWhiteSpace(token))
+{
+    IChatClient chat = new OpenAIClient(
+            new ApiKeyCredential(token),
+            new OpenAIClientOptions
+            {
+                Endpoint = new Uri("https://models.github.ai/inference")
+            })
+        .GetChatClient("openai/gpt-4o-mini")
+        .AsIChatClient();
+
+    builder.Services.AddChatClient(chat);
+}
+builder.Services.AddMcpServer()
+    .WithHttpTransport()
+    .WithTools<LibraryTools>();
 var app = builder.Build();
 app.MapGrpcService<RecommenderGrpcService>();
 app.MapLibraryApi();
@@ -78,8 +92,12 @@ app.MapPost("/api/v2/books/{id:int}/pitch", async (int id, LibraryContext db, IC
     return Results.Ok(new { b.Title, Pitch = r.Text });
 });
 
-app.MapGet("/api/v2/ask", async (string q, IChatClient ai) => (await ai.GetResponseAsync(q)).Text);
-
+if (!string.IsNullOrWhiteSpace(token))
+{
+    app.MapGet("/api/v2/ask",
+        async (string q, IChatClient ai) =>
+            (await ai.GetResponseAsync(q)).Text);
+}
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -116,5 +134,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapMcp("/mcp");
 
 app.Run();
