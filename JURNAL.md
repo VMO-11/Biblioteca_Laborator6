@@ -229,3 +229,53 @@ ORDER BY AVG(CAST("s"."Stars" AS REAL)) DESC
 * `book-descriptions.csv` a fost mutat în proiectul `GenreClassifier.Training` (Copy if newer). `GenreClassifier.zip` este salvat atât în proiectul consolă, cât și copiat în `Lab1_MVC/MLModels`.
 * Baza SQLite este urmărită în git (ca în laboratoarele anterioare), deci evaluările importate, jurnalul de recomandări și modelul reantrenat sunt incluse în commit-uri.
 * În dashboard, gruparea pe autor se face după numele complet (FirstName + LastName), așa cum se cere. Doi autori cu nume identic ar fi comasați; în datele actuale nu există astfel de cazuri (36 de grupuri = 36 de autori cu evaluări).
+
+Vladau Mihai jurnal.md
+
+# JURNAL - Laborator 9
+
+Varianta: A0 / B3
+Cititor test: 1075
+
+## A1 - Portal gRPC
+Am creat Biblioteca.Portal si am testat recomandarile.
+Pentru cititorul 5 au aparut corect titlurile si scorurile.
+Eticheta "cititor nou" apare cand Fallback este true.
+
+## A2 - Contract gRPC
+Am adaugat label = 5 si pragurile A0: 4.0 si 3.0.
+Portalul vechi a functionat si fara noul camp.
+Dupa actualizare, etichetele au fost afisate corect.
+Experimentul title = 6 nu a fost verificat separat.
+
+## A3 - Erori
+ReaderId -3: InvalidArgument.
+Top 50: InvalidArgument.
+Server oprit: Unavailable.
+Cererea valida a functionat.
+
+## S1 - Evaluari gRPC
+Pentru cititorul 1075 am adaugat Baltagul (5) si Morometii (4).
+Am modificat Morometii la 5 si am sters Baltagul.
+Carte 999: NotFound. Nota 7: InvalidArgument.
+Pentru securitate trebuie autentificare si autorizare,
+astfel incat cititorii sa poata modifica doar propriile evaluari.
+
+## S2 - MCP, varianta B3
+Tool: reader_ratings(readerId).
+Test: reader_ratings(readerId=1075).
+Rezultat: Morometii, 5 stele, 12.11.2026.
+Agentul a deformat titlul in "Moromeii".
+Celelalte doua intrebari nu au fost testate.
+
+## Folosirea AI
+Am folosit ChatGPT pentru cod, explicatii si depanare.
+Exemplu de cerere: implementarea tool-ului reader_ratings.
+Un cod propus anterior folosea b.Genre.Contains(genre),
+desi Genre era un obiect. Am observat eroarea in Rider
+si am corectat la b.Genre.Name.Contains(genre).
+
+## Observatii
+Nu am verificat separat toate experimentele cerute.
+Functionalitatile principale au fost testate.
+
