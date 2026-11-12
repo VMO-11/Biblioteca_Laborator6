@@ -10,6 +10,7 @@ using Microsoft.Extensions.AI;
 using OpenAI;
 using System.ClientModel;
 using Lab1_MVC.Mcp;
+using OllamaSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<LibraryContext>(options =>
@@ -52,7 +53,11 @@ if (!string.IsNullOrWhiteSpace(token))
 }
 builder.Services.AddMcpServer()
     .WithHttpTransport()
-    .WithTools<LibraryTools>();
+    .WithToolsFromAssembly();
+builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(
+    new OllamaApiClient(new Uri("http://localhost:11434"), "embeddinggemma"));
+
+builder.Services.AddSingleton<DocumentIndex>();
 var app = builder.Build();
 app.MapGrpcService<RecommenderGrpcService>();
 app.MapLibraryApi();
@@ -135,5 +140,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapMcp("/mcp");
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+    var index = app.Services.GetRequiredService<DocumentIndex>();
 
+    await index.BuildAsync(
+        db,
+        Path.Combine(app.Environment.ContentRootPath, "Docs", "regulament.md"));
+}
 app.Run();

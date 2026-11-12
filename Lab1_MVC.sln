@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.Client", "Biblio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.Agent", "Biblioteca.Agent\Biblioteca.Agent.csproj", "{D59FAB29-99F5-45A9-BFE0-0E093910FB0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biblioteca.Embeddings", "Biblioteca.Embeddings\Biblioteca.Embeddings.csproj", "{366E7F58-E927-44AE-8C71-FDDCDC154770}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,18 @@ Global
 		{D59FAB29-99F5-45A9-BFE0-0E093910FB0E}.Release|x64.Build.0 = Release|Any CPU
 		{D59FAB29-99F5-45A9-BFE0-0E093910FB0E}.Release|x86.ActiveCfg = Release|Any CPU
 		{D59FAB29-99F5-45A9-BFE0-0E093910FB0E}.Release|x86.Build.0 = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|x64.Build.0 = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Debug|x86.Build.0 = Debug|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|x64.ActiveCfg = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|x64.Build.0 = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|x86.ActiveCfg = Release|Any CPU
+		{366E7F58-E927-44AE-8C71-FDDCDC154770}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
