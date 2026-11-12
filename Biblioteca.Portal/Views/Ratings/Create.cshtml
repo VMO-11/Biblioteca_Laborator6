@@ -1,0 +1,23 @@
+@model BibliotecaGrpc.NewRating
+
+<h2>Adaugă evaluare</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Create" method="post">
+    <label>ID cititor</label>
+    <input asp-for="ReaderId" class="form-control" />
+
+    <label>ID carte</label>
+    <input asp-for="BookId" class="form-control" />
+
+    <label>Notă (1–5)</label>
+    <input asp-for="Stars" class="form-control" />
+
+    <button type="submit" class="btn btn-primary mt-3">
+        Salvează
+    </button>
+</form>

@@ -1,0 +1,51 @@
+@model List<BibliotecaGrpc.RatingItem>
+
+@{
+    ViewData["Title"] = "Evaluările cititorului";
+}
+
+<h2>Evaluările cititorului</h2>
+
+<form method="get" asp-action="Index">
+    <label>ID cititor:</label>
+    <input type="number" name="readerId" value="@ViewBag.ReaderId" />
+    <button type="submit">Caută</button>
+</form>
+
+<p>
+    <a asp-action="Create"
+       asp-route-readerId="@ViewBag.ReaderId">
+        Adaugă evaluare
+    </a>
+</p>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Carte</th>
+        <th>Notă</th>
+        <th>Data</th>
+        <th>Acțiuni</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var rating in Model)
+    {
+        <tr>
+            <td>@rating.Title</td>
+            <td>@rating.Stars</td>
+            <td>@rating.CreatedAt.ToDateTime().ToLocalTime().ToString("dd.MM.yyyy")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@rating.Id">Modifică</a>
+                |
+                <a asp-action="Delete" asp-route-id="@rating.Id">Șterge</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

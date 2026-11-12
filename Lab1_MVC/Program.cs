@@ -60,6 +60,7 @@ builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(
 builder.Services.AddSingleton<DocumentIndex>();
 var app = builder.Build();
 app.MapGrpcService<RecommenderGrpcService>();
+app.MapGrpcService<ReaderRatingsGrpcService>();
 app.MapLibraryApi();
 
 app.MapGet("/api/v2/readers/{id:int}/recommendations",
