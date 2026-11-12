@@ -7,6 +7,7 @@ using ModelContextProtocol.Server;
 using Lab1_MVC.Data;
 using Lab1_MVC.Models;
 using Lab1_MVC.Services;
+using ModelContextProtocol;
 namespace Lab1_MVC.Mcp;
 public record BookInfo(int Id, string Title, string? Author, string? Genre, int Year, decimal Price);
 
@@ -103,5 +104,45 @@ public class LibraryTools
                  b.Genre == null ? null : b.Genre.Name, b.Year, b.Price))
              .ToListAsync(ct);
      }
+    
+    public record ReaderRatingInfo(
+        int BookId,
+        string Title,
+        int Stars,
+        DateTime CreatedAt);
+
+    [McpServerTool(
+        Name = "reader_ratings",
+        ReadOnly = true,
+        Destructive = false,
+        OpenWorld = false)]
+    [Description("Returneaza evaluarile unui cititor din biblioteca, inclusiv cartile, notele si datele evaluarilor.")]
+    public static async Task<List<ReaderRatingInfo>> ReaderRatings(
+        LibraryContext db,
+        [Description("ID-ul cititorului ale carui evaluari sunt cautate.")] int readerId,
+        CancellationToken ct)
+    {
+        if (readerId <= 0)
+            throw new McpException("ID-ul cititorului trebuie sa fie pozitiv.");
+
+        var ratings = await db.Rating
+            .AsNoTracking()
+            .Where(r => r.ReaderId == readerId)
+            .OrderByDescending(r => r.CreatedAt)
+            .Take(10)
+            .Select(r => new ReaderRatingInfo(
+                r.BookID,
+                r.Book.Title,
+                r.Stars,
+                r.CreatedAt))
+            .ToListAsync(ct);
+
+        if (ratings.Count == 0)
+            throw new McpException(
+                $"Cititorul {readerId} nu are evaluari. Incearca un alt ID de cititor.");
+
+        return ratings;
+    }
+
 }
 
