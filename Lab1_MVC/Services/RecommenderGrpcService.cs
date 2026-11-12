@@ -17,6 +17,15 @@ public class RecommenderGrpcService(
     public override async Task<RecommendReply> Recommend(
         RecommendRequest request, ServerCallContext context)
     {
+        if (request.ReaderId <= 0)
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "reader_id trebuie să fie un număr pozitiv."));
+
+        if (request.Top > 20)
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "top poate fi cel mult 20."));
         var list = await recs.RecommendAsync(
             request.ReaderId, request.Top, context.CancellationToken);
 
@@ -31,6 +40,15 @@ public class RecommenderGrpcService(
         IServerStreamWriter<BookScore> responseStream,
         ServerCallContext context)
     {
+        if (request.ReaderId <= 0)
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "reader_id trebuie să fie un număr pozitiv."));
+
+        if (request.Top > 20)
+            throw new RpcException(new Status(
+                StatusCode.InvalidArgument,
+                "top poate fi cel mult 20."));
         var list = await recs.RecommendAsync(
             request.ReaderId, request.Top, context.CancellationToken);
 
