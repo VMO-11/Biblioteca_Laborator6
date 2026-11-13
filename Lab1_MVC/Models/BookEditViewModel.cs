@@ -9,4 +9,5 @@ public class BookEditViewModel
     [Range(1.0, 10000.0)] public decimal Price { get; set; }
     public int? AuthorID { get; set; }
     public int? GenreID { get; set; }
+    public string? Description { get; set; }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.VectorData;
 using Lab1_MVC.Data;
 
+
 public class DocumentIndex
 {
     //Misiunea 3 Partea B: schimbați modul si reporniti Biblioteca
@@ -39,7 +40,7 @@ public class DocumentIndex
                 Text = parts[i].Text,
                 Embedding = parts[i].Text         
             }, ct);
-        }
+        } 
 
         // 2. descrierile cartilor din baza de date (cate un fragment pe carte)
         var books = await db.Book.AsNoTracking()
@@ -82,4 +83,47 @@ public class DocumentIndex
                                      Math.Round(r.Score ?? 0, 3)));
         return hits;
     }
+    
+    public async Task IndexBookAsync(
+        LibraryContext db,
+        int bookId,
+        CancellationToken ct = default)
+    {
+        var b = await db.Book.AsNoTracking()
+            .Where(x => x.ID == bookId)
+            .Select(x => new
+            {
+                x.ID,
+                x.Title,
+                x.Description,
+                Author = x.Author == null
+                    ? ""
+                    : x.Author.FirstName + " " + x.Author.LastName,
+                Genre = x.Genre == null ? "" : x.Genre.Name
+            })
+            .FirstOrDefaultAsync(ct);
+
+        if (b is null || string.IsNullOrWhiteSpace(b.Description))
+        {
+            await RemoveBookAsync(bookId, ct);
+            return;
+        }
+
+        var text = $"{b.Title}, de {b.Author} ({b.Genre}). {b.Description}";
+
+        await _collection.UpsertAsync(new DocumentChunk
+        {
+            Id = $"carte-{b.ID}",
+            Source = "carte",
+            Title = $"{b.Title} (ID {b.ID})",
+            Text = text,
+            Embedding = text
+        }, ct);
+    }
+
+    public Task RemoveBookAsync(
+        int bookId,
+        CancellationToken ct = default)
+        => _collection.DeleteAsync($"carte-{bookId}", ct);
+    
 }
