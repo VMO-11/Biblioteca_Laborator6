@@ -1,0 +1,78 @@
+
+[
+  {
+    "question": "Cat platesc daca aduc cartea cu o saptamana mai tarziu?",
+    "source": "regulament",
+    "expected": "6. Intarzieri si penalitati"
+  },
+  {
+    "question": "Cine poate imprumuta carti?",
+    "source": "regulament",
+    "expected": "1. Cine poate imprumuta"
+  },
+  {
+    "question": "Pot cere o carte care e imprumutata de altcineva?",
+    "source": "regulament",
+    "expected": "5. Rezervari"
+  },
+  {
+    "question": "Cum propun bibliotecii sa cumpere o carte?",
+    "source": "regulament",
+    "expected": "12. Sugestii de achizitie"
+  },
+  {
+    "question": "Pana la ce ora e deschis in sesiune?",
+    "source": "regulament",
+    "expected": "9. Programul bibliotecii"
+  },
+  {
+    "question": "Roman despre o vaduva care isi creste copiii si incearca sa le ofere o viata mai buna",
+    "source": "carte",
+    "expected": "Mara"
+  },
+  {
+    "question": "O familie de tarani din Campia Dunarii trece prin schimbari sociale si conflicte intre generatii",
+    "source": "carte",
+    "expected": "Morometii"
+  },
+  {
+    "question": "O femeie cauta adevarul despre disparitia sotului ei intr-o calatorie prin munti",
+    "source": "carte",
+    "expected": "Baltagul"
+  },
+  {
+    "question": "Pe o planeta desertica, controlul unei resurse rare determina soarta unui imperiu",
+    "source": "carte",
+    "expected": "Dune"
+  },
+  {
+    "question": "Un trimis ajunge pe o planeta inghetata si descopera o societate cu reguli diferite",
+    "source": "carte",
+    "expected": "Mâna stângă a Întunericului"
+  },
+  {
+    "question": "Un tanar este prins intr-un conflict militar si se confrunta cu vinovatia si constiinta",
+    "source": "carte",
+    "expected": "Pădurea spânzuraților"
+  },
+  {
+    "question": "Un tanar talentat isi povesteste trecutul si aventurile intr-o lume fantastica",
+    "source": "carte",
+    "expected": "Numele vântului"
+  },
+  {
+    "question": "O investigatie asupra disparitiei unei femei dezvaluie secretele unei familii",
+    "source": "carte",
+    "expected": "Fata cu un tatuaj de dragon"
+  },
+  {
+    "question": "Cum proiectam sisteme informatice care gestioneaza cantitati mari de date si raman fiabile?",
+    "source": "carte",
+    "expected": "Designing Data-Intensive Applications"
+  },
+  {
+    "question": "Un tanar din mediul rural este prins intre datoria fata de familie si propriile dorinte",
+    "source": "carte",
+    "expected": "Ion"
+  }
+]
