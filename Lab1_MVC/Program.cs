@@ -58,6 +58,13 @@ builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(
     new OllamaApiClient(new Uri("http://localhost:11434"), "embeddinggemma"));
 
 builder.Services.AddSingleton<DocumentIndex>();
+if (string.IsNullOrWhiteSpace(token))
+{
+    builder.Services.AddSingleton<IChatClient>(
+        new OllamaApiClient(
+            new Uri("http://localhost:11434"),
+            "qwen3:4b"));
+}
 var app = builder.Build();
 app.MapGrpcService<RecommenderGrpcService>();
 app.MapGrpcService<ReaderRatingsGrpcService>();
