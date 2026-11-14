@@ -6,6 +6,7 @@ public class AskController(
     DocumentIndex index,
     IChatClient chat) : Controller
 {
+    private const double MinScore = 0.45;
     [HttpGet]
     public IActionResult Index()
     {
@@ -26,7 +27,18 @@ public class AskController(
         // 1. Cautam cele mai relevante 3 fragmente
         vm.Sources = await index.SearchAsync(
             vm.Question, 3, "regulament", ct);
+// Pastram doar fragmentele suficient de relevante
+        vm.Sources = vm.Sources
+            .Where(s => s.Score >= MinScore)
+            .ToList();
 
+// Daca nu avem surse relevante, nu mai apelam Ollama
+        if (vm.Sources.Count == 0)
+        {
+            vm.Answer = "Regulamentul nu precizeaza. Intrebati personalul bibliotecii.";
+            vm.Milliseconds = sw.ElapsedMilliseconds;
+            return View(vm);
+        }
         // 2. Pregatim fragmentele pentru model
         var fragmente = string.Join("\n\n",
             vm.Sources.Select((s, i) =>
