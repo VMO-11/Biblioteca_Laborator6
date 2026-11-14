@@ -279,3 +279,171 @@ si am corectat la b.Genre.Name.Contains(genre).
 Nu am verificat separat toate experimentele cerute.
 Functionalitatile principale au fost testate.
 
+
+# Laborator 10 - RAG
+
+Varianta: A0 / B3
+Branch: laborator-10
+
+## A1 - Actualizarea indexului
+
+Am implementat IndexBookAsync si RemoveBookAsync.
+Am testat cartea "Misterul statiei spatiale" (ID 41):
+- Create: cartea a aparut in RAG, scor 0.707.
+- Edit: descrierea despre civilizatia de pe Marte a fost gasita.
+- Delete: cartea ID 41 nu a mai aparut in rezultate.
+
+Cheia carte-{ID} trebuie sa fie aceeasi la pornire si la actualizare,
+pentru a evita fragmente duplicate.
+
+Daca salvarea in baza de date reuseste, dar Ollama nu functioneaza,
+baza ramane actualizata, iar indexul poate ramane neactualizat.
+Ar fi necesara o reindexare ulterioara.
+
+## A2 - RAG clasic
+
+Am creat pagina Intreaba regulamentul, cu raspuns AI,
+citari, surse si timp de executie.
+
+Intrebare: Cate carti poate imprumuta un student la master?
+Raspuns: 5 carti [1].
+Scor prima sursa: 0.773.
+Timp: 26476 ms.
+
+RAG clasic este potrivit pentru intrebari despre documentul selectat.
+Agentul RAG este mai flexibil cand trebuie sa aleaga intre
+catalogul de carti, regulament si alte instrumente.
+Testul separat cu intrebarea "Cat costa Baltagul?"
+nu a fost consemnat.
+
+## A3 - Prag de relevanta
+
+Scor initial laptop in sala de lectura: 0.594.
+Scor initial instalare Visual Studio: 0.339.
+Prag ales: MinScore = 0.45.
+
+Dupa modificare, intrebarea despre laptop a identificat
+sectiunea Sala de lectura, scor 0.601.
+Pentru Visual Studio, aplicatia a raspuns fara model:
+"Regulamentul nu precizeaza. Intrebati personalul bibliotecii."
+Timp: 1228 ms.
+
+## S1 - Evaluare B3
+
+Am creat eval.json cu 15 intrebari si am implementat
+optiunea 4 - Evaluare, cu recall@1, recall@3 si recall@5.
+
+Configuratia 1: titlu, autor, gen si descriere.
+Recall@1 = 46.7% (7/15)
+Recall@3 = 73.3% (11/15)
+Recall@5 = 80.0% (12/15)
+
+Configuratia 2: numai descrierea.
+Recall@1 = 60.0% (9/15)
+Recall@3 = 73.3% (11/15)
+Recall@5 = 80.0% (12/15)
+
+Comparatii:
+- Mara: pozitia 2 -> 1.
+- Numele vantului: pozitia 2 -> 1.
+- Ion: pozitia 2 -> 1.
+- Designing Data-Intensive Applications: pozitia 1 -> 3.
+- Fata cu un tatuaj de dragon: pozitia 5 -> 4.
+
+Nicio intrebare nu a trecut de la gasit la negasit
+sau invers. S-au modificat doar pozitiile.
+Pentru intrebarile despre subiectul cartilor, configuratia 2
+a avut rezultate mai bune la recall@1.
+Am revenit la configuratia 1, conform cerintei.
+
+Initial, evaluatorul nu identifica titlurile regulamentului
+din cauza caracterului "\." si a diacriticelor.
+Am corectat functia Normalizeaza si am repetat evaluarea.
+
+## S2 - Document nou A0
+
+Am creat Docs/cont-online.md, document fictiv cu 9 sectiuni.
+La pornire: 13 fragmente regulament, 9 fragmente cont-online,
+38 de carti indexate.
+
+Am actualizat tool-ul search_documents si pagina Intreaba,
+adaugand selectarea documentului.
+
+Teste in pagina:
+- Blocare cont: 5 incercari, 15 minute [1], 65110 ms.
+- Resetare parola: 30 minute [1], 23429 ms.
+
+Agentul MCP a apelat search_documents cu source=cont-online
+si a raspuns corect la ambele intrebari.
+
+## Folosirea AI
+
+Am folosit ChatGPT pentru explicatii, cod si depanare.
+Exemplu de cerere: implementarea evaluarii recall@k pentru B3.
+
+O problema a fost compararea gresita a titlurilor
+regulamentului, din cauza caracterului "\.".
+Am observat ca toate cele cinci intrebari despre regulament
+apareau negasite, am verificat titlurile si am corectat
+normalizarea.
+
+O alta problema a aparut la modificarea mesajului de sistem
+din AskController: erori de sintaxa la compilare.
+Am inlocuit blocul ChatMessage cu o varianta corecta.
+
+Documentul fictiv cont-online.md a fost redactat cu AI
+si verificat pentru coerenta regulilor.
+
+### Rezultate complete - Configuratia 1
+Titlu + autor + gen + descriere
+
+| Nr. | Loc | Scor primul rezultat |
+|---|---|---|
+| 1 | 1 | 0.514 |
+| 2 | 3 | 0.442 |
+| 3 | negasit | 0.402 |
+| 4 | 1 | 0.548 |
+| 5 | 1 | 0.488 |
+| 6 | 2 | 0.595 |
+| 7 | 1 | 0.634 |
+| 8 | negasit | 0.465 |
+| 9 | 1 | 0.710 |
+| 10 | 1 | 0.672 |
+| 11 | negasit | 0.567 |
+| 12 | 2 | 0.632 |
+| 13 | 5 | 0.462 |
+| 14 | 1 | 0.534 |
+| 15 | 2 | 0.527 |
+
+Recall@1: 46.7%
+Recall@3: 73.3%
+Recall@5: 80.0%
+
+### Rezultate complete - Configuratia 2
+Doar descrierea
+
+| Nr. | Loc | Scor primul rezultat |
+|---|---|---|
+| 1 | 1 | 0.514 |
+| 2 | 3 | 0.442 |
+| 3 | negasit | 0.402 |
+| 4 | 1 | 0.548 |
+| 5 | 1 | 0.488 |
+| 6 | 1 | 0.635 |
+| 7 | 1 | 0.728 |
+| 8 | negasit | 0.540 |
+| 9 | 1 | 0.863 |
+| 10 | 1 | 0.796 |
+| 11 | negasit | 0.633 |
+| 12 | 1 | 0.660 |
+| 13 | 4 | 0.601 |
+| 14 | 3 | 0.575 |
+| 15 | 1 | 0.625 |
+
+Recall@1: 60.0%
+Recall@3: 73.3%
+Recall@5: 80.0%
+
+Numerele 1-15 corespund intrebarilor din
+Biblioteca.Agent/eval.json.
+
