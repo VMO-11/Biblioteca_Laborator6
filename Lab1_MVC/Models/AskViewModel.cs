@@ -10,4 +10,6 @@ public class AskViewModel
     public List<DocumentHit> Sources { get; set; } = [];
 
     public long Milliseconds { get; set; }
+    [Display(Name = "Document")]
+    public string Source { get; set; } = "regulament";
 }

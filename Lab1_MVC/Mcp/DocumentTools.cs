@@ -6,14 +6,17 @@ using ModelContextProtocol.Server;
 public class DocumentTools
 {
     [McpServerTool(Name = "search_documents", ReadOnly = true, Destructive = false, OpenWorld = false)]
-    [Description("Caută după sens în regulamentul Bibliotecii și în descrierile cărților. " +
-                 "Folosește-l pentru întrebări despre reguli (împrumut, termene, penalități, program, sala de lectură) " +
-                 "și când cititorul descrie subiectul unei cărți, nu titlul ei. " +
-                 "Întoarce fragmentele cele mai apropiate de întrebare, cu sursa, titlul și scorul de similaritate (0–1).")]
+    [Description(
+        "Cauta semantic in documentele Bibliotecii FSEGA: " +
+        "regulament (imprumuturi, penalitati, program), " +
+        "cont-online (autentificare, parole, rezervari, notificari) " +
+        "si carte (descrierile cartilor din catalog). " +
+        "Returneaza fragmente cu titlu, sursa si scor de similaritate.")]
     public static Task<List<DocumentHit>> SearchDocuments(
-        DocumentIndex index,                                   
+        DocumentIndex index, 
+      
         [Description("Intrebarea sau descrierea, in cuvintele cititorului.")] string query,
-        [Description("Unde caută: 'regulament', 'carte' sau gol pentru ambele.")] string? source = null,
+        [Description("Sursa: 'regulament', 'cont-online', 'carte' sau null pentru toate sursele.")] string? source = null,
         [Description("Cate fragmente (1–8). Implicit 3.")] int top = 3,
         CancellationToken ct = default)
     {

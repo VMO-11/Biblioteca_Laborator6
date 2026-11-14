@@ -1,13 +1,22 @@
 @model AskViewModel
 
 @{
-    ViewData["Title"] = "Intreaba regulamentul";
+    ViewData["Title"] = "Intreaba biblioteca";
 }
 
-<h2>Intreaba regulamentul</h2>
+<h2>Intreaba biblioteca</h2>
 
 <form asp-action="Index" method="post">
     @Html.AntiForgeryToken()
+    
+    <div class="mb-3">
+        <label asp-for="Source" class="form-label"></label>
+        <select asp-for="Source" class="form-select">
+            <option value="regulament">Regulamentul bibliotecii</option>
+            <option value="cont-online">Contul online al cititorului</option>
+        </select>
+    </div>
+
 
     <label asp-for="Question"></label>
     <textarea asp-for="Question" class="form-control" rows="3"></textarea>

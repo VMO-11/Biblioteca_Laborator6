@@ -29,18 +29,40 @@ public class DocumentIndex
         await _collection.EnsureCollectionExistsAsync(ct);
 
         // 1. regulamentul impartit in fragmente
-        var parts = Chunker.Split(await File.ReadAllTextAsync(regulamentPath, ct), ChunkMode);
-        for (int i = 0; i < parts.Count; i++)
+        
+        // 1. Indexam toate documentele Markdown din Docs
+        var docsFolder = Path.GetDirectoryName(
+            Path.GetFullPath(regulamentPath))!;
+
+        int totalParts = 0;
+
+        foreach (var file in Directory.GetFiles(docsFolder, "*.md"))
         {
-            await _collection.UpsertAsync(new DocumentChunk
+            var source = Path.GetFileNameWithoutExtension(file);
+
+            var parts = Chunker.Split(
+                await File.ReadAllTextAsync(file, ct),
+                ChunkMode);
+
+            for (int i = 0; i < parts.Count; i++)
             {
-                Id = $"regulament-{i + 1:00}",
-                Source = "regulament",
-                Title = parts[i].Title,
-                Text = parts[i].Text,
-                Embedding = parts[i].Text         
-            }, ct);
-        } 
+                await _collection.UpsertAsync(new DocumentChunk
+                {
+                    Id = $"{source}-{i + 1:00}",
+                    Source = source,
+                    Title = parts[i].Title,
+                    Text = parts[i].Text,
+                    Embedding = parts[i].Text
+                }, ct);
+            }
+
+            totalParts += parts.Count;
+
+            _log.LogInformation(
+                "RAG: {Count} fragmente din {Source}",
+                parts.Count, source);
+        }
+
 
         // 2. descrierile cartilor din baza de date (cate un fragment pe carte)
         var books = await db.Book.AsNoTracking()
@@ -66,9 +88,11 @@ public class DocumentIndex
             }, ct);
         }
 
-        Count = parts.Count + books.Count;
-        _log.LogInformation("RAG: {Parts} fragmente din regulament ({Mode}) + {Books} carti indexate.",
-            parts.Count, ChunkMode, books.Count);
+        Count = totalParts + books.Count;
+
+        _log.LogInformation(
+            "RAG: {Parts} fragmente din documente ({Mode}) + {Books} carti indexate.",
+            totalParts, ChunkMode, books.Count);
     }
 
     public async Task<List<DocumentHit>> SearchAsync(string query, int top, string? source, CancellationToken ct = default)
